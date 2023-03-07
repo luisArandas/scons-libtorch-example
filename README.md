@@ -7,8 +7,8 @@ compiling on ubuntu 22.04 with global CUDA-11.4 install and 470 driver<br>
 
 ## ubuntu setup
 
-(get release from next link structure) <br>
 ```
+(get release and place it in libs/)
 $ wget https://download.pytorch.org/libtorch/nightly/cuxxx/libtorch-shared-with-deps-latest.zip
 scons
 ```
