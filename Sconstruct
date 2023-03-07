@@ -1,0 +1,63 @@
+
+import os
+import subprocess
+import platform
+from SCons.Environment import Environment
+
+system_name = platform.system()
+
+# get compiler path and decode it as string
+
+result = subprocess.run(['which', 'g++'], stdout=subprocess.PIPE)
+compiler_path = result.stdout.strip().decode()
+
+print("compiler is at -> ", compiler_path)
+
+env = Environment(ENV=os.environ)
+cxx = result.stdout.strip().decode() # 'g++', 'clang++'
+
+executable = 'scons-libtorch-example'
+
+current_folder = os.getcwd()
+build_folder = os.path.join(current_folder, 'build')
+src_folder = os.path.join(current_folder, 'src')
+libtorch_folder = os.path.join(current_folder, 'libs', 'libtorch')
+
+if not os.path.exists(build_folder):
+    os.makedirs(build_folder)
+else:
+    subprocess.run(['rm', '-rf', '{}/*'.format(build_folder)], shell=True)
+
+# specify include directories for libtorch zip exported to libs/
+
+env.Append(CPPPATH=[
+    os.path.join(libtorch_folder, 'include'),
+    os.path.join(libtorch_folder, 'include', 'torch', 'csrc', 'api', 'include'),
+    current_folder
+])
+
+# relying on global cuda-11.4 installation
+
+cuda_path = '/usr/local/cuda-11.4'
+env.Append(CPPPATH=[cuda_path + '/include'])
+env.Append(LIBPATH=[cuda_path + '/lib64'])
+env.Append(CXXFLAGS=['-std=c++17', '-D_GLIBCXX_USE_CXX11_ABI=0'])
+env.Replace(CXX=cxx)
+
+# specify libraries to link against (e.g. Torch and all its .so files)
+
+env.Append(LIBS=['torch', 'torch_cpu', 'torch_cuda_cpp', 'torch_cuda_cu', 'torch_cuda_linalg', 'torch_python', 'torch_global_deps', 'torch_cuda', 'c10']) # need specifically 'torch_cuda' for gpu actions
+env.Append(LINKFLAGS=['-Wl,-R'+ libtorch_folder +'/lib'])
+env.Append(LIBPATH=[os.path.join(libtorch_folder, 'lib')])
+
+# define the target executable and source files, need to write to build/ (todo)
+
+sources = [
+    os.path.join(src_folder, 'main.cpp')
+]
+
+example_app = env.Program(target=executable, source=sources)
+
+# build the example application
+
+env.Default(example_app)

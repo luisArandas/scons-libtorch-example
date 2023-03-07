@@ -1,0 +1,6 @@
+*.o
+scons-libtorch-example
+libs/
+downloads/
+build/
+.sconsign.dblite
