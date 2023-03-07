@@ -1,4 +1,8 @@
 
+
+# luis arandas 07-03-2022
+# simple scons script to build a c++ application using libtorch
+
 import os
 import subprocess
 import platform
