@@ -1,6 +1,6 @@
 
 
-# simple simple scons setup for libtorch with gpu access
+# simple scons setup for libtorch with gpu access
 
 simple scons setup for libtorch with gpu access<br> 
 compiling on ubuntu 22.04 with global CUDA-11.4 install and 470 driver<br>
